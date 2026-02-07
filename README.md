@@ -86,7 +86,7 @@ Muchos negocios en Google Maps no han reclamado su perfil, lo que representa una
 ┌───────▼────────┐       ┌───────▼────────┐
 │   Frontend     │       │    Backend     │
 │   Next.js 14   │◄──────┤   FastAPI      │
-│   Port 3000    │       │   Port 8000    │
+│   Port 3000    │       │   Port 3001    │
 └────────────────┘       └───────┬────────┘
                                  │
                     ┌────────────┼────────────┐
@@ -271,7 +271,7 @@ Edita `.env` con tus valores:
 ```env
 DB_PASSWORD=tu_password_seguro_aqui
 NOTIFICATION_WEBHOOK=https://hooks.slack.com/services/YOUR/WEBHOOK/URL
-NEXT_PUBLIC_API_URL=http://localhost:8000
+NEXT_PUBLIC_API_URL=http://localhost:3001
 ```
 
 #### 3. Levantar los servicios
@@ -282,14 +282,14 @@ docker-compose up --build
 
 Esto iniciará:
 - 🐘 **PostgreSQL** en el puerto 5432
-- 🐍 **Backend API** en http://localhost:8000
+- 🐍 **Backend API** en http://localhost:3001
 - ⚛️ **Frontend** en http://localhost:3000
 
 #### 4. Verificar instalación
 
 ```bash
 # Health check del backend
-curl http://localhost:8000/
+curl http://localhost:3001/
 
 # Debe responder:
 # {"status":"online","service":"LeadHunter API","version":"1.0.0"}
@@ -314,7 +314,7 @@ NEXT_PUBLIC_API_URL=https://api.merckout.me
 
 5. **Configurar dominios**:
    - Frontend: `panel.merckout.me` → Puerto 3000
-   - Backend: `api.merckout.me` → Puerto 8000
+   - Backend: `api.merckout.me` → Puerto 3001
 
 6. **Hacer Deploy** 🚀
 
@@ -346,7 +346,7 @@ ingress:
   - hostname: panel.merckout.me
     service: http://localhost:3000
   - hostname: api.merckout.me
-    service: http://localhost:8000
+    service: http://localhost:3001
   - service: http_status:404
 ```
 
@@ -401,7 +401,7 @@ curl https://panel.merckout.me/
 
 #### Base URL
 ```
-Desarrollo: http://localhost:8000
+Desarrollo: http://localhost:3001
 Producción: https://api.merckout.me
 ```
 
@@ -998,7 +998,7 @@ docker-compose up backend
 **Solución:**
 ```bash
 # Verificar NEXT_PUBLIC_API_URL en .env
-# Desarrollo: http://localhost:8000
+# Desarrollo: http://localhost:3001
 # Producción: https://api.merckout.me
 
 # Reiniciar frontend
@@ -1051,7 +1051,7 @@ services:
 **Solución:**
 ```bash
 # Verificar backend
-curl http://localhost:8000/
+curl http://localhost:3001/
 
 # Verificar logs del frontend
 docker-compose logs frontend

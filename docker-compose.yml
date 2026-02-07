@@ -20,7 +20,7 @@ services:
   backend:
     build: ./backend
     ports:
-      - "8000:8000"
+      - "3001:3001"
     environment:
       DATABASE_URL: postgresql://admin:${DB_PASSWORD}@postgres:5432/leadhunter
       NOTIFICATION_WEBHOOK: ${NOTIFICATION_WEBHOOK}
