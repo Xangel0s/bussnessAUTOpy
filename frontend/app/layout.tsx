@@ -5,8 +5,8 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'LeadHunter - Google Maps Lead Generator',
-  description: 'Encuentra y gestiona leads de negocios no reclamados en Google Maps',
+  title: 'Auto-Py LeadHunter - CRM Inteligente',
+  description: 'Sistema de prospección y gestión de leads con IA',
 }
 
 export default function RootLayout({
