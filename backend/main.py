@@ -50,8 +50,22 @@ class TrackingUpdate(BaseModel):
 @app.on_event("startup")
 async def startup():
     """Inicializa la base de datos al arrancar"""
-    await db.create_tables()
-    print("✅ Base de datos inicializada")
+    max_retries = 5
+    retry_delay = 2
+    
+    for attempt in range(max_retries):
+        try:
+            await db.create_tables()
+            print("✅ Base de datos inicializada")
+            return
+        except Exception as e:
+            if attempt < max_retries - 1:
+                print(f"⚠️ Intento {attempt + 1}/{max_retries} falló: {e}")
+                print(f"🔄 Reintentando en {retry_delay} segundos...")
+                await asyncio.sleep(retry_delay)
+            else:
+                print(f"❌ Error fatal conectando a la base de datos: {e}")
+                raise
 
 @app.get("/")
 async def root():
@@ -60,6 +74,25 @@ async def root():
         "status": "online",
         "service": "LeadHunter API",
         "version": "1.0.0"
+    }
+
+@app.get("/health")
+async def health_check():
+    """Health check detallado"""
+    try:
+        # Verificar conexión a BD
+        async with db.pool.acquire() as conn:
+            await conn.fetchval("SELECT 1")
+        db_status = "connected"
+    except Exception as e:
+        db_status = f"error: {str(e)}"
+    
+    return {
+        "status": "online",
+        "service": "LeadHunter API",
+        "version": "1.0.0",
+        "database": db_status,
+        "port": 3001
     }
 
 @app.post("/scrape")
