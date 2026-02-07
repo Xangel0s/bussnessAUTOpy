@@ -1,12 +1,13 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import Sidebar from '@/components/Sidebar'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Auto-Py LeadHunter - CRM Inteligente',
-  description: 'Sistema de prospección y gestión de leads con IA',
+  title: 'LeadHunter CRM - Prospección Inteligente',
+  description: 'Sistema de CRM para gestión de leads de Google Maps',
 }
 
 export default function RootLayout({
@@ -16,7 +17,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <div className="flex">
+          <Sidebar />
+          <main className="flex-1 bg-gray-50">
+            {children}
+          </main>
+        </div>
+      </body>
     </html>
   )
 }

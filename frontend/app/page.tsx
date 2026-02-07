@@ -2,19 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import Sidebar from '@/components/Sidebar'
-import { 
-  TrendingUp, 
-  Phone, 
-  MapPin, 
-  Star, 
-  Users,
-  Target,
-  Mail,
-  MessageSquare,
-  ArrowUp,
-  ArrowDown
-} from 'lucide-react'
+import { TrendingUp, Phone, MapPin, Star, Target, Users, Calendar, ArrowRight } from 'lucide-react'
+import Link from 'next/link'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
 
@@ -30,267 +19,233 @@ interface Stats {
   }>
 }
 
-export default function Dashboard() {
+interface Lead {
+  id: number
+  nombre: string
+  telefono: string | null
+  es_reclamable: boolean
+  rating: number | null
+  reviews: number | null
+  created_at: string
+}
+
+export default function Home() {
   const [stats, setStats] = useState<Stats | null>(null)
+  const [recentLeads, setRecentLeads] = useState<Lead[]>([])
 
   useEffect(() => {
-    fetchStats()
-    const interval = setInterval(fetchStats, 30000) // Actualizar cada 30s
-    return () => clearInterval(interval)
+    fetchData()
   }, [])
 
-  const fetchStats = async () => {
+  const fetchData = async () => {
     try {
-      const response = await axios.get(`${API_URL}/stats`)
-      setStats(response.data)
+      const [statsRes, leadsRes] = await Promise.all([
+        axios.get(`${API_URL}/stats`),
+        axios.get(`${API_URL}/leads`, { params: { limit: 5 } })
+      ])
+      setStats(statsRes.data)
+      setRecentLeads(leadsRes.data)
     } catch (error) {
-      console.error('Error fetching stats:', error)
+      console.error('Error fetching data:', error)
     }
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <Sidebar />
-      
-      <div className="flex-1 p-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-600 mt-1">Resumen general de tu pipeline de ventas</p>
-        </div>
+    <div className="p-8">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard</h1>
+        <p className="text-gray-600">Resumen general de tu pipeline de leads</p>
+      </div>
 
-        {/* Stats Grid */}
-        {stats && (
-          <>
-            {/* Main Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <StatCard
-                title="Total Leads"
-                value={stats.total}
-                icon={<Users className="text-blue-500" size={24} />}
-                trend="+12%"
-                trendUp={true}
-                color="blue"
-              />
-              
-              <StatCard
-                title="Oportunidades"
-                value={stats.reclamables}
-                icon={<Target className="text-green-500" size={24} />}
-                trend="+8%"
-                trendUp={true}
-                color="green"
-              />
-              
-              <StatCard
-                title="Con Teléfono"
-                value={stats.con_telefono}
-                icon={<Phone className="text-purple-500" size={24} />}
-                trend="+15%"
-                trendUp={true}
-                color="purple"
-              />
-              
-              <StatCard
-                title="% Conversión"
-                value={`${stats.porcentaje_oportunidades}%`}
-                icon={<TrendingUp className="text-orange-500" size={24} />}
-                trend="-2%"
-                trendUp={false}
-                color="orange"
-              />
+      {/* Stats Cards */}
+      {stats && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-blue-100 rounded-lg">
+                <Users className="text-blue-600" size={24} />
+              </div>
+              <span className="text-sm text-gray-500">Total</span>
             </div>
+            <p className="text-3xl font-bold text-gray-900">{stats.total}</p>
+            <p className="text-sm text-gray-600 mt-1">Leads totales</p>
+          </div>
 
-            {/* Pipeline por Tipificación */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-              {/* Pipeline Chart */}
-              <div className="bg-white rounded-lg shadow-lg p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-6">Pipeline de Ventas</h2>
-                <div className="space-y-4">
-                  {stats.por_tipificacion.map((tip) => (
-                    <div key={tip.nombre} className="flex items-center gap-4">
-                      <div 
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: tip.color }}
-                      />
-                      <div className="flex-1">
-                        <div className="flex justify-between mb-1">
-                          <span className="text-sm font-medium text-gray-700">{tip.nombre}</span>
-                          <span className="text-sm font-bold text-gray-900">{tip.cantidad}</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div
-                            className="h-2 rounded-full transition-all"
-                            style={{
-                              backgroundColor: tip.color,
-                              width: `${stats.total > 0 ? (tip.cantidad / stats.total) * 100 : 0}%`
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-green-100 rounded-lg">
+                <Target className="text-green-600" size={24} />
+              </div>
+              <span className="text-sm text-gray-500">Oportunidades</span>
+            </div>
+            <p className="text-3xl font-bold text-green-600">{stats.reclamables}</p>
+            <p className="text-sm text-gray-600 mt-1">No reclamados</p>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-purple-100 rounded-lg">
+                <Phone className="text-purple-600" size={24} />
+              </div>
+              <span className="text-sm text-gray-500">Contactables</span>
+            </div>
+            <p className="text-3xl font-bold text-purple-600">{stats.con_telefono}</p>
+            <p className="text-sm text-gray-600 mt-1">Con teléfono</p>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-orange-100 rounded-lg">
+                <TrendingUp className="text-orange-600" size={24} />
+              </div>
+              <span className="text-sm text-gray-500">Tasa</span>
+            </div>
+            <p className="text-3xl font-bold text-orange-600">{stats.porcentaje_oportunidades}%</p>
+            <p className="text-sm text-gray-600 mt-1">Oportunidades</p>
+          </div>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Pipeline por Tipificación */}
+        <div className="lg:col-span-2 bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-gray-900">Pipeline por Etapa</h2>
+            <Link
+              href="/crm"
+              className="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center gap-1"
+            >
+              Ver CRM
+              <ArrowRight size={16} />
+            </Link>
+          </div>
+
+          <div className="space-y-4">
+            {stats?.por_tipificacion.map((tip) => (
+              <div key={tip.nombre} className="flex items-center gap-4">
+                <div
+                  className="w-3 h-3 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: tip.color }}
+                />
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="font-medium text-gray-900">{tip.nombre}</span>
+                    <span className="text-sm text-gray-600">{tip.cantidad} leads</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      className="h-2 rounded-full transition-all"
+                      style={{
+                        backgroundColor: tip.color,
+                        width: `${stats.total > 0 ? (tip.cantidad / stats.total) * 100 : 0}%`
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
+            ))}
+          </div>
+        </div>
 
-              {/* Quick Actions */}
-              <div className="bg-white rounded-lg shadow-lg p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-6">Acciones Rápidas</h2>
-                <div className="space-y-3">
-                  <QuickActionButton
-                    icon={<Search className="text-white" size={20} />}
-                    label="Nueva Búsqueda"
-                    description="Buscar leads en Google Maps"
-                    color="bg-blue-600 hover:bg-blue-700"
-                    href="/busqueda"
-                  />
-                  
-                  <QuickActionButton
-                    icon={<MessageSquare className="text-white" size={20} />}
-                    label="Enviar WhatsApp"
-                    description="Campaña de mensajes masivos"
-                    color="bg-green-600 hover:bg-green-700"
-                    href="/whatsapp"
-                  />
-                  
-                  <QuickActionButton
-                    icon={<Mail className="text-white" size={20} />}
-                    label="Enviar Email"
-                    description="Campaña de cold email"
-                    color="bg-purple-600 hover:bg-purple-700"
-                    href="/email"
-                  />
-                  
-                  <QuickActionButton
-                    icon={<Database className="text-white" size={20} />}
-                    label="Enriquecer Leads"
-                    description="Extraer emails y validar SSL"
-                    color="bg-orange-600 hover:bg-orange-700"
-                    href="/enriquecimiento"
-                  />
+        {/* Leads Recientes */}
+        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-gray-900">Leads Recientes</h2>
+            <Link
+              href="/leads"
+              className="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center gap-1"
+            >
+              Ver todos
+              <ArrowRight size={16} />
+            </Link>
+          </div>
+
+          <div className="space-y-4">
+            {recentLeads.map((lead) => (
+              <div key={lead.id} className="pb-4 border-b border-gray-100 last:border-0">
+                <div className="flex items-start justify-between mb-2">
+                  <h3 className="font-semibold text-gray-900 text-sm line-clamp-2 flex-1">
+                    {lead.nombre}
+                  </h3>
+                  {lead.es_reclamable && (
+                    <span className="ml-2 text-green-600 text-xs">🎯</span>
+                  )}
+                </div>
+                
+                <div className="flex items-center gap-2 text-xs text-gray-600">
+                  {lead.telefono && (
+                    <span className="flex items-center gap-1">
+                      <Phone size={12} />
+                      {lead.telefono.slice(0, 12)}...
+                    </span>
+                  )}
+                  {lead.rating && (
+                    <span className="flex items-center gap-1">
+                      <Star size={12} className="text-yellow-500" />
+                      {lead.rating}
+                    </span>
+                  )}
                 </div>
               </div>
-            </div>
+            ))}
 
-            {/* Recent Activity */}
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">Actividad Reciente</h2>
-              <div className="space-y-4">
-                <ActivityItem
-                  icon={<Users className="text-blue-500" size={20} />}
-                  title="Nuevos leads encontrados"
-                  description="20 negocios agregados desde 'Cafeterías Lima'"
-                  time="Hace 5 minutos"
-                />
-                <ActivityItem
-                  icon={<Target className="text-green-500" size={20} />}
-                  title="Oportunidad detectada"
-                  description="Café de Lima - Negocio no reclamado con 4.5★"
-                  time="Hace 10 minutos"
-                />
-                <ActivityItem
-                  icon={<MessageSquare className="text-purple-500" size={20} />}
-                  title="Mensaje enviado"
-                  description="WhatsApp enviado a 15 leads"
-                  time="Hace 1 hora"
-                />
+            {recentLeads.length === 0 && (
+              <div className="text-center py-8 text-gray-400 text-sm">
+                No hay leads aún
               </div>
-            </div>
-          </>
-        )}
-      </div>
-    </div>
-  )
-}
-
-// Componentes auxiliares
-function StatCard({ 
-  title, 
-  value, 
-  icon, 
-  trend, 
-  trendUp, 
-  color 
-}: { 
-  title: string
-  value: number | string
-  icon: React.ReactNode
-  trend: string
-  trendUp: boolean
-  color: string
-}) {
-  return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
-      <div className="flex items-center justify-between mb-4">
-        <div className="text-gray-500 text-sm font-medium">{title}</div>
-        {icon}
-      </div>
-      <div className="flex items-end justify-between">
-        <div className="text-3xl font-bold text-gray-900">{value}</div>
-        <div className={`flex items-center gap-1 text-sm font-medium ${
-          trendUp ? 'text-green-600' : 'text-red-600'
-        }`}>
-          {trendUp ? <ArrowUp size={16} /> : <ArrowDown size={16} />}
-          {trend}
+            )}
+          </div>
         </div>
       </div>
-    </div>
-  )
-}
 
-function QuickActionButton({ 
-  icon, 
-  label, 
-  description, 
-  color, 
-  href 
-}: { 
-  icon: React.ReactNode
-  label: string
-  description: string
-  color: string
-  href: string
-}) {
-  return (
-    <a
-      href={href}
-      className={`flex items-center gap-4 p-4 rounded-lg ${color} transition-colors`}
-    >
-      <div className="flex-shrink-0">
-        {icon}
-      </div>
-      <div className="flex-1 text-white">
-        <div className="font-semibold">{label}</div>
-        <div className="text-sm opacity-90">{description}</div>
-      </div>
-    </a>
-  )
-}
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+        <Link
+          href="/search"
+          className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl p-6 hover:shadow-lg transition-shadow"
+        >
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-white/20 rounded-lg">
+              <MapPin size={24} />
+            </div>
+            <div>
+              <h3 className="font-bold text-lg">Nueva Búsqueda</h3>
+              <p className="text-sm text-blue-100">Encuentra más leads</p>
+            </div>
+          </div>
+        </Link>
 
-function ActivityItem({ 
-  icon, 
-  title, 
-  description, 
-  time 
-}: { 
-  icon: React.ReactNode
-  title: string
-  description: string
-  time: string
-}) {
-  return (
-    <div className="flex items-start gap-4 p-4 hover:bg-gray-50 rounded-lg transition-colors">
-      <div className="flex-shrink-0 mt-1">
-        {icon}
-      </div>
-      <div className="flex-1">
-        <div className="font-semibold text-gray-900">{title}</div>
-        <div className="text-sm text-gray-600">{description}</div>
-        <div className="text-xs text-gray-400 mt-1">{time}</div>
+        <Link
+          href="/crm"
+          className="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl p-6 hover:shadow-lg transition-shadow"
+        >
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-white/20 rounded-lg">
+              <Target size={24} />
+            </div>
+            <div>
+              <h3 className="font-bold text-lg">Pipeline CRM</h3>
+              <p className="text-sm text-green-100">Gestiona tus leads</p>
+            </div>
+          </div>
+        </Link>
+
+        <Link
+          href="/to-contact"
+          className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl p-6 hover:shadow-lg transition-shadow"
+        >
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-white/20 rounded-lg">
+              <Calendar size={24} />
+            </div>
+            <div>
+              <h3 className="font-bold text-lg">Seguimientos</h3>
+              <p className="text-sm text-purple-100">Próximos contactos</p>
+            </div>
+          </div>
+        </Link>
       </div>
     </div>
   )
 }
-
-// Import faltante
-import { Database, Search } from 'lucide-react'

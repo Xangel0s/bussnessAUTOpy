@@ -1,47 +1,34 @@
 'use client'
 
+import { Home, Search, Users, BarChart3, Settings, Target, Phone, Calendar } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { 
-  LayoutDashboard, 
-  Users, 
-  Search, 
-  MessageSquare, 
-  Mail, 
-  TrendingUp,
-  Settings,
-  Target,
-  Database,
-  Zap
-} from 'lucide-react'
 
 const menuItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', href: '/' },
-  { icon: Search, label: 'Búsqueda', href: '/busqueda' },
-  { icon: Users, label: 'Leads', href: '/leads' },
-  { icon: Target, label: 'Pipeline', href: '/pipeline' },
-  { icon: MessageSquare, label: 'WhatsApp', href: '/whatsapp' },
-  { icon: Mail, label: 'Email', href: '/email' },
-  { icon: Database, label: 'Enriquecimiento', href: '/enriquecimiento' },
-  { icon: Zap, label: 'Campañas', href: '/campanas' },
-  { icon: TrendingUp, label: 'Reportes', href: '/reportes' },
-  { icon: Settings, label: 'Configuración', href: '/configuracion' },
+  { icon: Home, label: 'Dashboard', href: '/' },
+  { icon: Search, label: 'Nueva Búsqueda', href: '/search' },
+  { icon: Target, label: 'Pipeline CRM', href: '/crm' },
+  { icon: Users, label: 'Todos los Leads', href: '/leads' },
+  { icon: Phone, label: 'Por Contactar', href: '/to-contact' },
+  { icon: Calendar, label: 'Seguimientos', href: '/follow-ups' },
+  { icon: BarChart3, label: 'Estadísticas', href: '/stats' },
+  { icon: Settings, label: 'Configuración', href: '/settings' },
 ]
 
 export default function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <div className="w-64 bg-gray-900 text-white min-h-screen p-4 flex flex-col">
+    <div className="w-64 bg-gray-900 text-white min-h-screen p-6 flex flex-col">
       {/* Logo */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold flex items-center gap-2">
           🎯 <span>LeadHunter</span>
         </h1>
-        <p className="text-gray-400 text-sm mt-1">CRM Inteligente</p>
+        <p className="text-gray-400 text-sm mt-1">CRM Profesional</p>
       </div>
 
-      {/* Menu */}
+      {/* Navigation */}
       <nav className="flex-1">
         <ul className="space-y-2">
           {menuItems.map((item) => {
@@ -68,10 +55,10 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="mt-auto pt-4 border-t border-gray-800">
-        <div className="text-xs text-gray-500">
-          <p>Auto-Py v1.0.0</p>
-          <p className="mt-1">Powered by Python + FastAPI</p>
+      <div className="mt-auto pt-6 border-t border-gray-800">
+        <div className="text-sm text-gray-400">
+          <p className="font-semibold text-white mb-1">Auto-Py LeadHunter</p>
+          <p>v1.0.0</p>
         </div>
       </div>
     </div>
