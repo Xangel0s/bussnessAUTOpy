@@ -26,7 +26,6 @@ app.add_middleware(
 
 # Instancias globales
 db = Database()
-scraper = GoogleMapsScraper()
 notifier = NotificationService()
 
 # Estado del scraping
@@ -85,7 +84,10 @@ async def run_scraping(query: str, max_results: int):
     scraping_state["current_query"] = query
     
     try:
-        async for lead in scraper.scrape_google_maps(query, max_results):
+        # Crear instancia del scraper con los parámetros
+        scraper = GoogleMapsScraper(query, max_results)
+        
+        async for lead in scraper.scrape():
             # Guardar en base de datos
             lead_id = await db.insert_lead(lead)
             
@@ -95,7 +97,10 @@ async def run_scraping(query: str, max_results: int):
                 if lead["es_reclamable"]:
                     scraping_state["opportunities_found"] += 1
                     # Enviar notificación
-                    await notifier.send_notification(lead)
+                    await notifier.send_opportunity_alert(
+                        lead, 
+                        scraping_state["opportunities_found"]
+                    )
     
     except Exception as e:
         print(f"Error en scraping: {e}")
