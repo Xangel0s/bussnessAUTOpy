@@ -116,30 +116,45 @@ async def run_scraping(query: str, max_results: int):
     scraping_state["opportunities_found"] = 0
     scraping_state["current_query"] = query
     
+    print(f"🔍 Iniciando scraping: {query} (max: {max_results})")
+    
     try:
         # Crear instancia del scraper con los parámetros
         scraper = GoogleMapsScraper(query, max_results)
         
+        lead_count = 0
         async for lead in scraper.scrape():
+            lead_count += 1
+            print(f"📍 Lead #{lead_count}: {lead.get('nombre', 'Sin nombre')}")
+            
             # Guardar en base de datos
             lead_id = await db.insert_lead(lead)
             
             if lead_id:
                 scraping_state["leads_found"] += 1
+                print(f"✅ Lead guardado con ID: {lead_id}")
                 
                 if lead["es_reclamable"]:
                     scraping_state["opportunities_found"] += 1
+                    print(f"🎯 Oportunidad encontrada! Total: {scraping_state['opportunities_found']}")
                     # Enviar notificación
                     await notifier.send_opportunity_alert(
                         lead, 
                         scraping_state["opportunities_found"]
                     )
+            else:
+                print(f"⚠️ Lead duplicado o error al guardar")
+        
+        print(f"✅ Scraping completado: {scraping_state['leads_found']} leads, {scraping_state['opportunities_found']} oportunidades")
     
     except Exception as e:
-        print(f"Error en scraping: {e}")
+        print(f"❌ Error en scraping: {e}")
+        import traceback
+        traceback.print_exc()
     
     finally:
         scraping_state["is_running"] = False
+        print("🏁 Scraping finalizado")
 
 @app.get("/scrape/status")
 async def get_scraping_status():
