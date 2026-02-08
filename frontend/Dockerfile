@@ -1,12 +1,12 @@
 FROM node:20-alpine AS deps
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
 FROM node:20-alpine AS builder
 WORKDIR /app
-COPY package*.json package-lock.json* ./
-RUN npm ci
+COPY package*.json ./
+RUN npm install
 COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED 1
