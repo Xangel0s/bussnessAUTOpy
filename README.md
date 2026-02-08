@@ -40,11 +40,29 @@ Muchos negocios en Google Maps no han reclamado su perfil, lo que representa una
 - **Extracción de datos**: nombre, teléfono, dirección, rating, reseñas
 - **Procesamiento en tiempo real** con actualizaciones en vivo
 - **Anti-detección**: Navegación realista con delays aleatorios
+- **Historial de búsquedas**: Últimas 10 búsquedas con estadísticas
 
-### 📊 CRM Integrado
-- **Sistema de tipificaciones**: 7 estados predefinidos (Nuevo, Contactado, Interesado, etc.)
+### 📊 CRM Integrado (7 Módulos Completos)
+1. **Dashboard Principal** - Vista general con métricas clave
+2. **Búsqueda de Leads** - Scraping con monitoreo en tiempo real
+3. **Gestión de Leads** - Tabla completa con filtros y exportación CSV
+4. **Seguimientos** - Calendario de contactos programados
+5. **Por Contactar** - Leads con teléfono listos para llamar
+6. **Pipeline CRM** - Vista Kanban por etapas de venta
+7. **Mapa de Calor** ⭐ - Análisis geográfico y de oportunidades
+
+### 🔥 Mapa de Calor de Oportunidades (NUEVO)
+- **Análisis Geográfico**: Top ubicaciones con mayor tasa de éxito
+- **Análisis por Categoría**: Tipos de negocio más prometedores
+- **Tendencia Temporal**: Evolución de leads por período
+- **Insights Automáticos**: Mejor ubicación, categoría, rating promedio
+- **Código de Colores**: Visualización intuitiva del % de éxito
+- **Métricas Calculadas**: Rating, contactabilidad, oportunidades
+
+### 📋 Sistema de Tipificaciones
+- **7 estados predefinidos**: Nuevo, Contactado, Interesado, No Interesado, Seguimiento, Cerrado, No Contactar
 - **Historial completo** de interacciones con cada lead
-- **Seguimientos programados** con recordatorios
+- **Seguimientos programados** con recordatorios y alertas
 - **Filtros avanzados** por estado, reclamabilidad, y más
 - **Estadísticas en tiempo real** del pipeline de ventas
 
@@ -58,6 +76,8 @@ Muchos negocios en Google Maps no han reclamado su perfil, lo que representa una
 - **Visualización en tiempo real** del progreso de scraping
 - **Gestión completa de leads** desde la interfaz web
 - **Responsive design** para uso en cualquier dispositivo
+- **Exportación a CSV** de todos los datos
+- **Modal de detalles** con información completa del lead
 
 ### 🗄️ Base de Datos Robusta
 - **PostgreSQL 16** para almacenamiento confiable

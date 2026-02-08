@@ -1,6 +1,6 @@
 'use client'
 
-import { Home, Search, Users, BarChart3, Settings, Target, Phone, Calendar } from 'lucide-react'
+import { Home, Search, Users, BarChart3, Settings, Target, Phone, Calendar, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -11,6 +11,7 @@ const menuItems = [
   { icon: Users, label: 'Todos los Leads', href: '/leads' },
   { icon: Phone, label: 'Por Contactar', href: '/to-contact' },
   { icon: Calendar, label: 'Seguimientos', href: '/follow-ups' },
+  { icon: TrendingUp, label: 'Mapa de Calor', href: '/heatmap' },
   { icon: BarChart3, label: 'Estadísticas', href: '/stats' },
   { icon: Settings, label: 'Configuración', href: '/settings' },
 ]
