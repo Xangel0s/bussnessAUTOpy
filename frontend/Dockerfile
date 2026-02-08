@@ -12,15 +12,21 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED 1
 ENV NODE_ENV production
 
-# Build - force success even if there are TypeScript errors
-RUN npm run build; BUILD_EXIT=$?; \
+# Build with full error output
+RUN echo "=== Starting Next.js build ===" && \
+    npm run build 2>&1 | tee /tmp/build.log; \
+    BUILD_EXIT=${PIPESTATUS[0]}; \
+    echo "=== Build exit code: $BUILD_EXIT ==="; \
     if [ $BUILD_EXIT -ne 0 ]; then \
-      echo "Build failed with exit code $BUILD_EXIT, checking .next directory..."; \
+      echo "=== BUILD FAILED - Showing last 50 lines ==="; \
+      tail -50 /tmp/build.log; \
+      echo "=== Checking .next directory ==="; \
       ls -la .next/ 2>&1 || echo ".next not found"; \
+      echo "=== BUILD FAILED - Cannot continue ==="; \
+      exit 1; \
     fi; \
-    # Ensure .next exists even if build failed
-    mkdir -p .next; \
-    exit 0
+    echo "=== Build successful ==="; \
+    ls -la .next/
 
 FROM node:20-alpine AS runner
 WORKDIR /app
