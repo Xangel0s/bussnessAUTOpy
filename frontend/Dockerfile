@@ -8,12 +8,16 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-RUN npm run build
+
+# Build with verbose output
+ENV NEXT_TELEMETRY_DISABLED 1
+RUN npm run build 2>&1 | tee build.log || (echo "=== BUILD FAILED ===" && cat build.log && exit 1)
 
 FROM node:20-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV production
+ENV NEXT_TELEMETRY_DISABLED 1
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
