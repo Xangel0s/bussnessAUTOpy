@@ -1,17 +1,16 @@
 FROM node:20-alpine AS deps
 WORKDIR /app
 COPY package*.json ./
-RUN npm install --only=production
+RUN npm ci
 
 FROM node:20-alpine AS builder
 WORKDIR /app
-COPY package*.json ./
-RUN npm install
+COPY package*.json package-lock.json* ./
+RUN npm ci
 COPY . .
 
-# Build with verbose output
 ENV NEXT_TELEMETRY_DISABLED 1
-RUN npm run build 2>&1 | tee build.log || (echo "=== BUILD FAILED ===" && cat build.log && exit 1)
+RUN npm run build
 
 FROM node:20-alpine AS runner
 WORKDIR /app
@@ -22,11 +21,10 @@ ENV NEXT_TELEMETRY_DISABLED 1
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Create public directory and copy if exists
-RUN mkdir -p ./public
-COPY --from=builder --chown=nextjs:nodejs /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
 
 USER nextjs
 
@@ -34,4 +32,4 @@ EXPOSE 3000
 
 ENV PORT 3000
 
-CMD ["node", "server.js"]
+CMD ["npm", "start"]
