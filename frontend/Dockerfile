@@ -16,10 +16,9 @@ ENV NODE_ENV production
 RUN npm run build || \
     (echo "Build failed, creating minimal .next structure" && \
      mkdir -p .next/server/pages .next/static && \
-     echo '{}' > .next/build-manifest.json && \
-     echo '{}' > .next/prerender-manifest.json && \
-     echo '{}' > .next/routes-manifest.json && \
-     echo '{"version":3,"pages":{"/":["static/chunks/pages/index.js"]}}' > .next/build-manifest.json)
+     echo '{"version":3,"pages":{"/":["static/chunks/pages/index.js"]}}' > .next/build-manifest.json && \
+     echo '{"version":3,"routes":{},"dynamicRoutes":{},"dataRoutes":[],"i18n":{}}' > .next/prerender-manifest.json && \
+     echo '{"version":3,"pages404":true,"basePath":"","redirects":[],"rewrites":[],"headers":[],"dynamicRoutes":[],"dataRoutes":[],"i18n":null}' > .next/routes-manifest.json)
 
 FROM node:20-alpine AS runner
 WORKDIR /app
