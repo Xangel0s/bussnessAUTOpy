@@ -15,5 +15,5 @@ ENV NODE_ENV development
 # Expose port
 EXPOSE 3000
 
-# Run in development mode (more tolerant of errors)
-CMD ["npm", "run", "dev"]
+# Start command (Coolify will use npm start)
+CMD ["npm", "start"]
